@@ -1,0 +1,12 @@
+# Virtual Environment
+venv/
+__pycache__/
+*.py[cod]
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Media Folders (Large files)
+raw/
+converted/
