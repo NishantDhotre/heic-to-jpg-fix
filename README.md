@@ -28,7 +28,19 @@ Now, you have a folder ready to blast onto Instagram without a single glitch.
 
 ---
 
-## 🛠️ How to Replicate This (Step-by-Step)
+## 🔌 Plug-and-Play (No Coding Required)
+
+Don't want to mess with Python? We've built a standalone app for you!
+
+1.  Download `HeicToJpgConverter.exe` from the **releases** (or the `dist` folder).
+2.  Create a folder named `raw` right next to the `.exe`.
+3.  Put your photos in `raw`.
+4.  Double-click `HeicToJpgConverter.exe`.
+5.  **Watch it fly!** 🚀
+
+---
+
+## 🛠️ How to Replicate This (For Developers)
 
 Want to fix this yourself? Follow these simple steps.
 
@@ -56,13 +68,16 @@ source venv/bin/activate
 ```
 
 ### 3. Install the Magic Libraries
-We use `Pillow` for image processing and `pillow-heif` to read the HEIC format:
+We use `Pillow` for image processing, `pillow-heif` for format support, plus `tqdm` and `colorama` for a beautiful CLI dashboard:
 ```bash
-pip install Pillow pillow-heif
+pip install Pillow pillow-heif tqdm colorama
 ```
 
 ### 4. The Script (`convert_photos.py`)
-Create a file named `convert_photos.py` and paste this code:
+Create a file named `convert_photos.py` and paste the code from the repo. It handles:
+- **Progress Bars**: Real-time tracking of 500+ files.
+- **Smart Dashboard**: Summarizes converted vs. copied files.
+- **Error Handling**: Skips bad files without crashing.
 
 ```python
 import os
