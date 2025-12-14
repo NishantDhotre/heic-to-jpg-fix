@@ -1,109 +1,104 @@
 import os
-import shutil
+import argparse
 import time
-from PIL import Image
-from pillow_heif import register_heif_opener
 from tqdm import tqdm
 from colorama import init, Fore, Style
+from converter_core import process_file_generator, format_time, get_file_list
 
 # Initialize colorama
 init(autoreset=True)
-
-# Register HEIC opener
-register_heif_opener()
-
-SOURCE_DIR = 'raw'
-DEST_DIR = 'converted'
 
 def print_header():
     print("\n" + "="*60)
     print(f"{Fore.CYAN}{Style.BRIGHT}   📸  HEIC TO JPG CONVERSION DASHBOARD  📸{Style.RESET_ALL}")
     print("="*60 + "\n")
 
-def format_time(seconds):
-    if seconds < 60:
-        return f"{seconds:.2f}s"
-    elif seconds < 3600:
-        minutes = int(seconds // 60)
-        secs = seconds % 60
-        return f"{minutes}m {secs:.0f}s"
-    else:
-        hours = int(seconds // 3600)
-        minutes = int((seconds % 3600) // 60)
-        secs = seconds % 60
-        return f"{hours}h {minutes}m {secs:.0f}s"
-
-def print_summary(total, converted, copied, failed, elapsed_time):
-    formatted_time = format_time(elapsed_time)
+def print_summary(stats):
+    formatted_time = format_time(stats.elapsed)
     print("\n" + "="*60)
     print(f"{Fore.GREEN}{Style.BRIGHT}   ✅  PROCESSING COMPLETE  ✅{Style.RESET_ALL}")
     print("="*60)
     print(f" ⏱️  {Fore.YELLOW}Time Elapsed:{Style.RESET_ALL}   {formatted_time}")
-    print(f" 📂 {Fore.YELLOW}Total Files:{Style.RESET_ALL}    {total}")
+    print(f" 📂 {Fore.YELLOW}Total Files:{Style.RESET_ALL}    {stats.total_files}")
     print("-" * 30)
-    print(f" 🔄 {Fore.CYAN}Converted (HEIC):{Style.RESET_ALL} {converted}")
-    print(f" 📋 {Fore.BLUE}Copied (Media):{Style.RESET_ALL}   {copied}")
+    print(f" 🔄 {Fore.CYAN}Converted (HEIC):{Style.RESET_ALL} {stats.converted}")
+    print(f" 📋 {Fore.BLUE}Copied (Media):{Style.RESET_ALL}   {stats.copied}")
     
-    if failed > 0:
-        print(f" ❌ {Fore.RED}Failed:{Style.RESET_ALL}           {failed}")
+    if stats.failed > 0:
+        print(f" ❌ {Fore.RED}Failed:{Style.RESET_ALL}           {stats.failed}")
     else:
         print(f" ❌ {Fore.RED}Failed:{Style.RESET_ALL}           0")
     print("="*60 + "\n")
 
-def convert_photos():
-    if not os.path.exists(SOURCE_DIR):
-        print(f"{Fore.RED}Error: Source directory '{SOURCE_DIR}' does not exist.{Style.RESET_ALL}")
-        return
+def get_directories():
+    parser = argparse.ArgumentParser(description="Convert HEIC photos to JPG.")
+    parser.add_argument("--input", "-i", type=str, help="Input directory containing photos")
+    parser.add_argument("--output", "-o", type=str, help="Output directory for converted photos")
+    args = parser.parse_args()
 
-    if not os.path.exists(DEST_DIR):
-        os.makedirs(DEST_DIR)
+    source_dir = args.input
+    dest_dir = args.output
 
-    files = [f for f in os.listdir(SOURCE_DIR) if not os.path.isdir(os.path.join(SOURCE_DIR, f))]
-    total_files = len(files)
+    if not source_dir:
+        if os.path.exists('raw'):
+            source_dir = 'raw'
+        else:
+            print_header()
+            print(f"{Fore.YELLOW}Default 'raw' folder not found.{Style.RESET_ALL}")
+            while not source_dir or not os.path.exists(source_dir):
+                source_dir = input(f"{Fore.CYAN}Please enter the path to your photos: {Style.RESET_ALL}").strip().strip('"').strip("'")
+                if not os.path.exists(source_dir):
+                    print(f"{Fore.RED}Error: Directory not found. Try again.{Style.RESET_ALL}")
+
+    if not dest_dir:
+        if source_dir == 'raw':
+             dest_dir = 'converted'
+        else:
+             dest_dir = os.path.join(source_dir, 'converted')
+
+    return source_dir, dest_dir
+
+def run_cli():
+    source_dir, dest_dir = get_directories()
     
-    start_time = time.time()
-    
-    stats = {
-        'converted': 0,
-        'copied': 0,
-        'failed': 0
-    }
+    # Check if files exist before starting generator
+    files_check = get_file_list(source_dir)
+    if not files_check:
+         print(f"{Fore.RED}No files found in source directory!{Style.RESET_ALL}")
+         return
 
     print_header()
-    print(f"Using Source:      {Fore.YELLOW}{os.path.abspath(SOURCE_DIR)}{Style.RESET_ALL}")
-    print(f"Using Destination: {Fore.YELLOW}{os.path.abspath(DEST_DIR)}{Style.RESET_ALL}")
-    print(f"Total Files:       {total_files}\n")
+    print(f"Using Source:      {Fore.YELLOW}{os.path.abspath(source_dir)}{Style.RESET_ALL}")
+    print(f"Using Destination: {Fore.YELLOW}{os.path.abspath(dest_dir)}{Style.RESET_ALL}")
+    print(f"Total Files:       {len(files_check)}\n")
 
-    # Progress bar loop
-    with tqdm(total=total_files, unit="file", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]") as pbar:
-        for filename in files:
-            file_path = os.path.join(SOURCE_DIR, filename)
-            name, ext = os.path.splitext(filename)
-            ext_lower = ext.lower()
+    # Run generator
+    gen = process_file_generator(source_dir, dest_dir)
+    
+    # We need to initialize pbar after we know total, which the generator calculates, 
+    # but for CLI we usually want the pbar immediately. 
+    # Helper: get stats object from first yield or pre-calculate?
+    # Actually, let's just use the file check len for pbar total.
+    
+    total = len(files_check)
+    last_stats = None
 
-            # Update description (truncate if too long)
+    with tqdm(total=total, unit="file", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]") as pbar:
+        for filename, stats in gen:
+            last_stats = stats
             desc_name = (filename[:25] + '..') if len(filename) > 25 else filename
             pbar.set_description(f"Processing {desc_name}")
-
-            try:
-                if ext_lower in ['.heic', '.heif']:
-                    image = Image.open(file_path)
-                    image = image.convert('RGB')
-                    save_path = os.path.join(DEST_DIR, f"{name}.jpg")
-                    image.save(save_path, "JPEG", quality=100, subsampling=0)
-                    stats['converted'] += 1
-                else:
-                    shutil.copy2(file_path, os.path.join(DEST_DIR, filename))
-                    stats['copied'] += 1
-            except Exception as e:
-                pbar.write(f"{Fore.RED}Error processing {filename}: {e}{Style.RESET_ALL}")
-                stats['failed'] += 1
-            
             pbar.update(1)
 
-    elapsed = time.time() - start_time
-    print_summary(total_files, stats['converted'], stats['copied'], stats['failed'], elapsed)
+    if last_stats:
+        print_summary(last_stats)
 
 if __name__ == "__main__":
-    convert_photos()
+    try:
+        run_cli()
+    except KeyboardInterrupt:
+        print(f"\n{Fore.RED}Process cancelled by user.{Style.RESET_ALL}")
+    except Exception as e:
+         print(f"\n{Fore.RED}An unexpected error occurred: {e}{Style.RESET_ALL}")
+    
     input(f"\n{Fore.CYAN}Press Enter to exit...{Style.RESET_ALL}")

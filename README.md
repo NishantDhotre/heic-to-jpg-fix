@@ -32,11 +32,28 @@ Now, you have a folder ready to blast onto Instagram without a single glitch.
 
 Don't want to mess with Python? We've built a standalone app for you!
 
-1.  Download `HeicToJpgConverter.exe` from the **releases** (or the `dist` folder).
-2.  Create a folder named `raw` right next to the `.exe`.
-3.  Put your photos in `raw`.
-4.  Double-click `HeicToJpgConverter.exe`.
-5.  **Watch it fly!** 🚀
+**Option A: The GUI App (Recommended)** 🖼️
+1. Download `HeicToJpgConverter_GUI.exe`.
+2. Double-click it.
+3. Select your "Source Folder" (where the HEICs are).
+4. Click **START CONVERSION**.
+5. Watch the progress bar go!
+
+**Option B: The One-Click Tool** ⚡
+1.  Download `HeicToJpgConverter.exe`.
+2.  double-click it.
+3.  It auto-detects a `raw` folder or asks you for the path.
+4.  **Watch it fly!** 🚀
+
+---
+
+## 🤓 Advanced Usage (CLI)
+Power users can run the tool (script or exe) from the command line for more control:
+
+```powershell
+# Specify custom input and output folders
+HeicToJpgConverter.exe --input "C:\My\Vacation Photos" --output "C:\My\Converted"
+```
 
 ---
 
