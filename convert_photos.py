@@ -106,3 +106,4 @@ def convert_photos():
 
 if __name__ == "__main__":
     convert_photos()
+    input(f"\n{Fore.CYAN}Press Enter to exit...{Style.RESET_ALL}")

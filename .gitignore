@@ -10,3 +10,6 @@ Thumbs.db
 # Media Folders (Large files)
 raw/
 converted/
+build/
+dist/
+*.spec
