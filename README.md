@@ -36,7 +36,7 @@ Don't want to mess with Python? We've built a standalone app for you!
 
 ![GUI Preview](assets/gui_preview.png)
 
-1. Download `HeicToJpgConverter_GUI.exe`.
+1. Download `HeicToJpgConverter_GUI.exe` from **[Google Drive](https://drive.google.com/drive/folders/1TTEufso74MyFki3YTooh7U_k3dEVXOqE?usp=drive_link)**.
 2. Double-click it.
 3. Select your "Source Folder" (where the HEICs are).
 4. Click **START CONVERSION**.
@@ -46,7 +46,7 @@ Don't want to mess with Python? We've built a standalone app for you!
 
 ![CLI Preview](assets/cli_preview.png)
 
-1.  Download `HeicToJpgConverter.exe`.
+1.  Download `HeicToJpgConverter.exe` from **[Google Drive](https://drive.google.com/drive/folders/1TTEufso74MyFki3YTooh7U_k3dEVXOqE?usp=drive_link)**.
 2.  double-click it.
 3.  It auto-detects a `raw` folder or asks you for the path.
 4.  **Watch it fly!** 🚀
