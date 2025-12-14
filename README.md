@@ -33,6 +33,9 @@ Now, you have a folder ready to blast onto Instagram without a single glitch.
 Don't want to mess with Python? We've built a standalone app for you!
 
 **Option A: The GUI App (Recommended)** 🖼️
+
+![GUI Preview](assets/gui_preview.png)
+
 1. Download `HeicToJpgConverter_GUI.exe`.
 2. Double-click it.
 3. Select your "Source Folder" (where the HEICs are).
