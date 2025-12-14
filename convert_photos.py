@@ -20,11 +20,25 @@ def print_header():
     print(f"{Fore.CYAN}{Style.BRIGHT}   📸  HEIC TO JPG CONVERSION DASHBOARD  📸{Style.RESET_ALL}")
     print("="*60 + "\n")
 
+def format_time(seconds):
+    if seconds < 60:
+        return f"{seconds:.2f}s"
+    elif seconds < 3600:
+        minutes = int(seconds // 60)
+        secs = seconds % 60
+        return f"{minutes}m {secs:.0f}s"
+    else:
+        hours = int(seconds // 3600)
+        minutes = int((seconds % 3600) // 60)
+        secs = seconds % 60
+        return f"{hours}h {minutes}m {secs:.0f}s"
+
 def print_summary(total, converted, copied, failed, elapsed_time):
+    formatted_time = format_time(elapsed_time)
     print("\n" + "="*60)
     print(f"{Fore.GREEN}{Style.BRIGHT}   ✅  PROCESSING COMPLETE  ✅{Style.RESET_ALL}")
     print("="*60)
-    print(f" ⏱️  {Fore.YELLOW}Time Elapsed:{Style.RESET_ALL}   {elapsed_time:.2f}s")
+    print(f" ⏱️  {Fore.YELLOW}Time Elapsed:{Style.RESET_ALL}   {formatted_time}")
     print(f" 📂 {Fore.YELLOW}Total Files:{Style.RESET_ALL}    {total}")
     print("-" * 30)
     print(f" 🔄 {Fore.CYAN}Converted (HEIC):{Style.RESET_ALL} {converted}")
