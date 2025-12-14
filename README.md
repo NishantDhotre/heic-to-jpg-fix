@@ -43,6 +43,9 @@ Don't want to mess with Python? We've built a standalone app for you!
 5. Watch the progress bar go!
 
 **Option B: The One-Click Tool** ⚡
+
+![CLI Preview](assets/cli_preview.png)
+
 1.  Download `HeicToJpgConverter.exe`.
 2.  double-click it.
 3.  It auto-detects a `raw` folder or asks you for the path.
