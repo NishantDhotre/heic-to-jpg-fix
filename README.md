@@ -56,13 +56,16 @@ source venv/bin/activate
 ```
 
 ### 3. Install the Magic Libraries
-We use `Pillow` for image processing and `pillow-heif` to read the HEIC format:
+We use `Pillow` for image processing, `pillow-heif` for format support, plus `tqdm` and `colorama` for a beautiful CLI dashboard:
 ```bash
-pip install Pillow pillow-heif
+pip install Pillow pillow-heif tqdm colorama
 ```
 
 ### 4. The Script (`convert_photos.py`)
-Create a file named `convert_photos.py` and paste this code:
+Create a file named `convert_photos.py` and paste the code from the repo. It handles:
+- **Progress Bars**: Real-time tracking of 500+ files.
+- **Smart Dashboard**: Summarizes converted vs. copied files.
+- **Error Handling**: Skips bad files without crashing.
 
 ```python
 import os
